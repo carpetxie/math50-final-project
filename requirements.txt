@@ -1,0 +1,10 @@
+datasets
+pretty_midi
+numpy
+scipy
+pandas
+scikit-learn
+seaborn
+requests
+tqdm
+
