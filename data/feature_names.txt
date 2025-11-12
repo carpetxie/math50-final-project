@@ -1,0 +1,9 @@
+mean_pitch
+pitch_stddev
+pitch_range
+note_density
+mean_ioi
+ioi_stddev
+mean_duration
+mean_velocity
+velocity_stddev
