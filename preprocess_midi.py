@@ -125,19 +125,20 @@ def extract_features(segment: List[MIDIEvent]) -> np.ndarray:
     4. note_density: Total count of notes in segment
     5. mean_ioi: Average inter-onset interval (time between note starts)
     6. ioi_stddev: Standard deviation of inter-onset intervals
-    7. mean_duration: Average note duration
-    8. mean_velocity: Average note velocity
-    9. velocity_stddev: Standard deviation of velocity
+    7. ioi_entropy: Shannon entropy of inter-onset intervals
+    8. mean_duration: Average note duration
+    9. mean_velocity: Average note velocity
+    10. velocity_stddev: Standard deviation of velocity
     
     Args:
         segment: List of MIDIEvent objects
         
     Returns:
-        Feature vector as numpy array (9 features)
+        Feature vector as numpy array (10 features)
     """
     if len(segment) == 0:
         # Return zeros if segment is empty
-        return np.zeros(9)
+        return np.zeros(10)
     
     # Extract arrays of values
     notes = np.array([e.note for e in segment])
@@ -161,6 +162,22 @@ def extract_features(segment: List[MIDIEvent]) -> np.ndarray:
     note_density = len(segment)
     mean_ioi = np.mean(iois) if len(iois) > 0 else 0.0
     ioi_stddev = np.std(iois) if len(iois) > 1 else 0.0
+    
+    # Shannon entropy of IOI
+    if len(iois) > 1:
+        # Bin IOIs into histogram for entropy calculation
+        # Use 20 bins, or fewer if we have fewer data points
+        num_bins = min(20, max(2, len(iois) // 2))
+        hist, _ = np.histogram(iois, bins=num_bins)
+        # Normalize to get probabilities
+        probs = hist / np.sum(hist)
+        # Remove zeros for entropy calculation
+        probs = probs[probs > 0]
+        # Calculate Shannon entropy: H = -Σ(p * log2(p))
+        ioi_entropy = -np.sum(probs * np.log2(probs)) if len(probs) > 0 else 0.0
+    else:
+        ioi_entropy = 0.0
+    
     mean_duration = np.mean(durations)
     
     # Dynamic features
@@ -174,6 +191,7 @@ def extract_features(segment: List[MIDIEvent]) -> np.ndarray:
         note_density,
         mean_ioi,
         ioi_stddev,
+        ioi_entropy,
         mean_duration,
         mean_velocity,
         velocity_stddev
@@ -312,6 +330,7 @@ def save_preprocessed_data(X: np.ndarray, Y: List[Tuple[str, str]], output_dir: 
         'note_density',
         'mean_ioi',
         'ioi_stddev',
+        'ioi_entropy',
         'mean_duration',
         'mean_velocity',
         'velocity_stddev'
@@ -322,7 +341,7 @@ def save_preprocessed_data(X: np.ndarray, Y: List[Tuple[str, str]], output_dir: 
     print(f"\nData saved to {output_dir}/")
     print(f"  - X_features.npy: {X.shape}")
     print(f"  - Y_labels.pkl: {len(Y)} labels")
-    print(f"  - feature_names.txt: 9 features")
+    print(f"  - feature_names.txt: 10 features")
 
 
 if __name__ == "__main__":
@@ -338,8 +357,8 @@ if __name__ == "__main__":
     print("-" * 80)
     feature_names = [
         'mean_pitch', 'pitch_stddev', 'pitch_range',
-        'note_density', 'mean_ioi', 'ioi_stddev', 'mean_duration',
-        'mean_velocity', 'velocity_stddev'
+        'note_density', 'mean_ioi', 'ioi_stddev', 'ioi_entropy',
+        'mean_duration', 'mean_velocity', 'velocity_stddev'
     ]
     
     for i, name in enumerate(feature_names):

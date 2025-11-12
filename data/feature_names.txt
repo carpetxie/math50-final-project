@@ -4,6 +4,7 @@ pitch_range
 note_density
 mean_ioi
 ioi_stddev
+ioi_entropy
 mean_duration
 mean_velocity
 velocity_stddev
