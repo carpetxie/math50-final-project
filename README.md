@@ -1,6 +1,6 @@
-# MIDI Classical Music Dataset Import
+# MIDI Classical Music Composer Classification
 
-This project imports the [midi-classical-music](https://huggingface.co/datasets/drengskapur/midi-classical-music) dataset from Hugging Face.
+This project preprocesses MIDI classical music data for composer classification using linear models.
 
 ## Setup
 
@@ -9,32 +9,44 @@ This project imports the [midi-classical-music](https://huggingface.co/datasets/
 pip install -r requirements.txt
 ```
 
-2. Run the import script:
+## Quick Start
+
+### 1. Preprocess MIDI Files
+
+```bash
+python preprocess_midi.py
+```
+
+This will:
+- Load MIDI files from Hugging Face
+- Segment pieces into 30-second chunks
+- Extract 9 musical features per segment
+- Save to `data/X_features.npy` and `data/Y_labels.pkl`
+
+### 2. View Preprocessed Data
+
+```bash
+python load_data.py
+```
+
+### 3. Explore Dataset (Optional)
+
 ```bash
 python import_dataset.py
 ```
 
-## Usage
+## Project Structure
 
-```python
-from datasets import load_dataset
-
-# Load the dataset
-dataset = load_dataset("drengskapur/midi-classical-music")
-
-# Access the train split
-train_data = dataset['train']
-
-# Get file names
-file_names = train_data['file_name']
-
-# Access a specific example
-example = train_data[0]
-```
+- **`preprocess_midi.py`** - Main preprocessing pipeline
+- **`load_data.py`** - Utilities to load and inspect preprocessed data
+- **`import_dataset.py`** - Dataset exploration script
+- **`data/`** - Preprocessed feature matrices and labels
+- **`PREPROCESSING_README.md`** - Detailed preprocessing documentation
+- **`MIDI_DATA_EXPLANATION.md`** - MIDI format reference
 
 ## Dataset Information
 
-- **Dataset**: drengskapur/midi-classical-music
-- **Size**: ~4.8k rows in the train split
-- **Features**: Contains MIDI file names for classical music pieces
+- **Dataset**: [drengskapur/midi-classical-music](https://huggingface.co/datasets/drengskapur/midi-classical-music)
+- **Size**: ~4,800 MIDI files
+- **Preprocessed**: 9 features per 30-second segment
 
