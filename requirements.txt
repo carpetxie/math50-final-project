@@ -1,10 +1,4 @@
-datasets
-pretty_midi
-numpy
-scipy
-pandas
-scikit-learn
-seaborn
-requests
-tqdm
+datasets>=2.14.0
+huggingface-hub>=0.16.0
+mido>=1.2.10
 
