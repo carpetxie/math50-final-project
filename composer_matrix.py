@@ -46,8 +46,22 @@ def solve_least_squares(A, b):
     return x
 
 
+def calculate_balanced_accuracy(y_pred, y_true):
+    """Calculate balanced accuracy (accounts for class imbalance)."""
+    tp = np.sum((y_pred == 1) & (y_true == 1))
+    tn = np.sum((y_pred == 0) & (y_true == 0))
+    fp = np.sum((y_pred == 1) & (y_true == 0))
+    fn = np.sum((y_pred == 0) & (y_true == 1))
+    
+    sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
+    
+    balanced_acc = (sensitivity + specificity) / 2
+    return balanced_acc
+
+
 def find_optimal_threshold(y_pred_raw, y_true):
-    """Find the optimal threshold that maximizes accuracy."""
+    """Find the optimal threshold that maximizes balanced accuracy."""
     min_pred = np.min(y_pred_raw)
     max_pred = np.max(y_pred_raw)
     thresholds = np.linspace(min_pred, max_pred, 100)
@@ -56,9 +70,9 @@ def find_optimal_threshold(y_pred_raw, y_true):
     
     for threshold in thresholds:
         y_pred = (y_pred_raw >= threshold).astype(int)
-        accuracy = np.mean(y_pred == y_true)
-        if accuracy > best_accuracy:
-            best_accuracy = accuracy
+        balanced_acc = calculate_balanced_accuracy(y_pred, y_true)
+        if balanced_acc > best_accuracy:
+            best_accuracy = balanced_acc
             best_threshold = threshold
     
     return best_threshold, thresholds
@@ -66,6 +80,7 @@ def find_optimal_threshold(y_pred_raw, y_true):
 
 def evaluate_classifier(y_pred, y_true):
     """Evaluate classifier performance."""
+    balanced_acc = calculate_balanced_accuracy(y_pred, y_true)
     accuracy = np.mean(y_pred == y_true)
     tp = np.sum((y_pred == 1) & (y_true == 1))
     fp = np.sum((y_pred == 1) & (y_true == 0))
@@ -73,7 +88,7 @@ def evaluate_classifier(y_pred, y_true):
     precision = tp / (tp + fp) if (tp + fp) > 0 else 0
     recall = tp / (tp + fn) if (tp + fn) > 0 else 0
     f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
-    return {'accuracy': accuracy, 'precision': precision, 'recall': recall, 'f1': f1}
+    return {'balanced_accuracy': balanced_acc, 'accuracy': accuracy, 'precision': precision, 'recall': recall, 'f1': f1}
 
 
 def binary_classify_pair(X, Y, composer1, composer2, test_size=0.3, random_seed=42):
@@ -125,6 +140,7 @@ def binary_classify_pair(X, Y, composer1, composer2, test_size=0.3, random_seed=
     results = evaluate_classifier(y_test_pred, y_test)
     
     return {
+        'balanced_accuracy': results['balanced_accuracy'],
         'accuracy': results['accuracy'],
         'precision': results['precision'],
         'recall': results['recall'],
@@ -144,24 +160,24 @@ def plot_threshold_graph(result, pair_num):
     """Plot threshold optimization graph for a composer pair."""
     fig, ax = plt.subplots(figsize=(8, 6))
     
-    # Calculate accuracies for all thresholds
-    accuracies = []
+    # Calculate balanced accuracies for all thresholds
+    balanced_accuracies = []
     for threshold in result['all_thresholds']:
         y_pred = (result['y_train_pred_raw'] >= threshold).astype(int)
-        accuracy = np.mean(y_pred == result['y_train'])
-        accuracies.append(accuracy)
+        balanced_acc = calculate_balanced_accuracy(y_pred, result['y_train'])
+        balanced_accuracies.append(balanced_acc)
     
     # Plot
-    ax.plot(result['all_thresholds'], accuracies, linewidth=2, color='purple', label='Accuracy')
+    ax.plot(result['all_thresholds'], balanced_accuracies, linewidth=2, color='purple', label='Balanced Accuracy')
     ax.axvline(x=result['threshold'], color='green', linestyle='--', linewidth=2, 
                label=f'Optimal Threshold = {result["threshold"]:.4f}')
-    ax.axhline(y=result['accuracy'], color='red', linestyle='--', linewidth=1, alpha=0.5,
-               label=f'Test Accuracy = {result["accuracy"]:.4f}')
+    ax.axhline(y=result['balanced_accuracy'], color='red', linestyle='--', linewidth=1, alpha=0.5,
+               label=f'Test Balanced Accuracy = {result["balanced_accuracy"]:.4f}')
     
     ax.set_xlabel('Threshold', fontsize=12)
-    ax.set_ylabel('Accuracy', fontsize=12)
+    ax.set_ylabel('Balanced Accuracy', fontsize=12)
     ax.set_title(f'{result["composer1"]} vs {result["composer2"]}\n'
-                 f'Test Accuracy: {result["accuracy"]:.4f} ({result["accuracy"]*100:.2f}%)',
+                 f'Test Balanced Accuracy: {result["balanced_accuracy"]:.4f} ({result["balanced_accuracy"]*100:.2f}%)',
                  fontsize=14)
     ax.legend()
     ax.grid(alpha=0.3)
@@ -197,10 +213,10 @@ def create_composer_matrix(X, Y, top_n=3):
             result = binary_classify_pair(X, Y, composer1, composer2)
             
             if result:
-                accuracy_matrix[i, j] = result['accuracy']
-                accuracy_matrix[j, i] = result['accuracy']  # Symmetric
+                accuracy_matrix[i, j] = result['balanced_accuracy']
+                accuracy_matrix[j, i] = result['balanced_accuracy']  # Symmetric
                 pair_results.append(result)
-                print(f"  Accuracy: {result['accuracy']:.4f} ({result['accuracy']*100:.2f}%)")
+                print(f"  Balanced Accuracy: {result['balanced_accuracy']:.4f} ({result['balanced_accuracy']*100:.2f}%)")
                 print(f"  Precision: {result['precision']:.4f}, Recall: {result['recall']:.4f}, F1: {result['f1']:.4f}")
                 
                 # Plot threshold graph
@@ -221,7 +237,7 @@ def visualize_matrix(accuracy_matrix, composer_names):
     
     im = ax.imshow(accuracy_matrix, cmap='RdYlGn', vmin=0.5, vmax=1.0, aspect='auto')
     cbar = plt.colorbar(im, ax=ax)
-    cbar.set_label('Accuracy', rotation=270, labelpad=20)
+    cbar.set_label('Balanced Accuracy', rotation=270, labelpad=20)
     
     ax.set_xticks(np.arange(len(composer_names)))
     ax.set_yticks(np.arange(len(composer_names)))
@@ -241,7 +257,7 @@ def visualize_matrix(accuracy_matrix, composer_names):
     
     ax.set_xlabel('Composer 2 (Predicted)', fontsize=12)
     ax.set_ylabel('Composer 1 (True)', fontsize=12)
-    ax.set_title('Binary Classification Accuracy Matrix', fontsize=14, pad=20)
+    ax.set_title('Binary Classification Balanced Accuracy Matrix\n(Normalized for Class Imbalance)', fontsize=14, pad=20)
     
     plt.tight_layout()
     plt.savefig('composer_matrix.png', dpi=150, bbox_inches='tight')
@@ -264,7 +280,7 @@ def main():
     
     # Print matrix
     print("\n" + "=" * 80)
-    print("ACCURACY MATRIX")
+    print("BALANCED ACCURACY MATRIX")
     print("=" * 80)
     print(f"\n{'':15s}", end="")
     for name in composer_names:

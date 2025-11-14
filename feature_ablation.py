@@ -44,8 +44,22 @@ def solve_least_squares(A, b):
     return x
 
 
+def calculate_balanced_accuracy(y_pred, y_true):
+    """Calculate balanced accuracy (accounts for class imbalance)."""
+    tp = np.sum((y_pred == 1) & (y_true == 1))
+    tn = np.sum((y_pred == 0) & (y_true == 0))
+    fp = np.sum((y_pred == 1) & (y_true == 0))
+    fn = np.sum((y_pred == 0) & (y_true == 1))
+    
+    sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
+    
+    balanced_acc = (sensitivity + specificity) / 2
+    return balanced_acc
+
+
 def find_optimal_threshold(y_pred_raw, y_true):
-    """Find the optimal threshold that maximizes accuracy."""
+    """Find the optimal threshold that maximizes balanced accuracy."""
     min_pred = np.min(y_pred_raw)
     max_pred = np.max(y_pred_raw)
     thresholds = np.linspace(min_pred, max_pred, 100)
@@ -54,9 +68,9 @@ def find_optimal_threshold(y_pred_raw, y_true):
     
     for threshold in thresholds:
         y_pred = (y_pred_raw >= threshold).astype(int)
-        accuracy = np.mean(y_pred == y_true)
-        if accuracy > best_accuracy:
-            best_accuracy = accuracy
+        balanced_acc = calculate_balanced_accuracy(y_pred, y_true)
+        if balanced_acc > best_accuracy:
+            best_accuracy = balanced_acc
             best_threshold = threshold
     
     return best_threshold
@@ -113,10 +127,10 @@ def classify_with_features(X, y, feature_indices, test_size=0.3, random_seed=42)
     # Classify test set
     y_test_pred = (y_test_pred_raw >= optimal_threshold).astype(int)
     
-    # Calculate accuracy
-    accuracy = np.mean(y_test_pred == y_test)
+    # Calculate balanced accuracy
+    balanced_acc = calculate_balanced_accuracy(y_test_pred, y_test)
     
-    return accuracy
+    return balanced_acc
 
 
 def ablation_study_for_composer(X, Y, target_composer, feature_names):
@@ -144,8 +158,8 @@ def ablation_study_for_composer(X, Y, target_composer, feature_names):
     
     # Baseline: all features
     all_features = list(range(X.shape[1]))
-    baseline_accuracy = classify_with_features(X, y, all_features)
-    print(f"  Baseline accuracy (all features): {baseline_accuracy:.4f} ({baseline_accuracy*100:.2f}%)")
+    baseline_balanced_acc = classify_with_features(X, y, all_features)
+    print(f"  Baseline balanced accuracy (all features): {baseline_balanced_acc:.4f} ({baseline_balanced_acc*100:.2f}%)")
     
     # Ablate each feature
     ablation_results = {}
@@ -156,21 +170,21 @@ def ablation_study_for_composer(X, Y, target_composer, feature_names):
         features_without_i = [j for j in range(X.shape[1]) if j != i]
         
         # Train without this feature
-        ablated_accuracy = classify_with_features(X, y, features_without_i)
+        ablated_balanced_acc = classify_with_features(X, y, features_without_i)
         
         # Calculate change
-        accuracy_change = baseline_accuracy - ablated_accuracy
+        accuracy_change = baseline_balanced_acc - ablated_balanced_acc
         
         ablation_results[feature_name] = {
-            'ablated_accuracy': ablated_accuracy,
+            'ablated_balanced_accuracy': ablated_balanced_acc,
             'accuracy_change': accuracy_change
         }
         
         change_str = f"{accuracy_change:+.4f}" if accuracy_change >= 0 else f"{accuracy_change:.4f}"
-        print(f"    {feature_name:20s}: {ablated_accuracy:.4f} (change: {change_str})")
+        print(f"    {feature_name:20s}: {ablated_balanced_acc:.4f} (change: {change_str})")
     
     return {
-        'baseline_accuracy': baseline_accuracy,
+        'baseline_balanced_accuracy': baseline_balanced_acc,
         'ablation_results': ablation_results
     }
 
@@ -194,15 +208,21 @@ def create_ablation_heatmap(results, composer_names, feature_names):
         for i, feature in enumerate(feature_names):
             heatmap_data[i, j] = results[composer]['ablation_results'][feature]['accuracy_change']
     
+    # Update colorbar range based on data
+    vmin = np.min(heatmap_data) - 0.01
+    vmax = np.max(heatmap_data) + 0.01
+    
     # Create figure
     fig, ax = plt.subplots(figsize=(10, 12))
     
     # Use diverging colormap (red = important, blue = harmful)
-    im = ax.imshow(heatmap_data, cmap='RdYlGn', aspect='auto', vmin=-0.05, vmax=0.15)
+    # Center colormap at 0 for better visualization
+    vmax_abs = max(abs(vmin), abs(vmax))
+    im = ax.imshow(heatmap_data, cmap='RdYlGn', aspect='auto', vmin=-vmax_abs, vmax=vmax_abs)
     
     # Add colorbar
     cbar = plt.colorbar(im, ax=ax)
-    cbar.set_label('Accuracy Change (Baseline - Ablated)', rotation=270, labelpad=25)
+    cbar.set_label('Balanced Accuracy Change (Baseline - Ablated)', rotation=270, labelpad=25)
     
     # Set ticks and labels
     ax.set_xticks(np.arange(n_composers))
@@ -222,7 +242,7 @@ def create_ablation_heatmap(results, composer_names, feature_names):
     
     ax.set_xlabel('Composer', fontsize=12)
     ax.set_ylabel('Feature', fontsize=12)
-    ax.set_title('Feature Importance via Ablation\n(Positive = Important, Negative = Harmful)', 
+    ax.set_title('Feature Importance via Ablation (Balanced Accuracy)\n(Positive = Important, Negative = Harmful, Normalized for Class Imbalance)', 
                  fontsize=14, pad=20)
     
     plt.tight_layout()
@@ -239,8 +259,8 @@ def print_summary(results, composer_names):
     
     for composer in composer_names:
         print(f"\n{composer.upper()}:")
-        print(f"  Baseline Accuracy: {results[composer]['baseline_accuracy']:.4f} "
-              f"({results[composer]['baseline_accuracy']*100:.2f}%)")
+        print(f"  Baseline Balanced Accuracy: {results[composer]['baseline_balanced_accuracy']:.4f} "
+              f"({results[composer]['baseline_balanced_accuracy']*100:.2f}%)")
         
         # Sort features by importance
         ablation_results = results[composer]['ablation_results']
