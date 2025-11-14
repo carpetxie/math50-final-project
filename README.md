@@ -1,6 +1,6 @@
 # MIDI Classical Music Composer Classification
 
-This project preprocesses MIDI classical music data for composer classification using linear models.
+This project preprocesses MIDI classical music data and performs binary composer classification using least squares linear algebra.
 
 ## Setup
 
@@ -10,36 +10,38 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-## Quick Start
+## Usage
 
-### Preprocess MIDI Files
+### Step 1: Preprocess MIDI Files
 
 ```bash
 python preprocess_midi.py
 ```
 
-This will load MIDI files from Hugging Face, segment pieces into 30-second chunks, extract 10 musical features per segment, and save to `data/X_features.npy` and `data/Y_labels.pkl`.
+This downloads MIDI files from Hugging Face, segments pieces into 30-second chunks, extracts 10 musical features per segment, and saves to `data/X_features.npy` and `data/Y_labels.pkl`.
 
-### View Preprocessed Data
+By default, it processes the first 100 files. To process all ~4,800 files, edit `preprocess_midi.py` and remove the `max_files=100` parameter.
 
-```bash
-python load_data.py
-```
-
-### Explore Dataset (Optional)
+### Step 2: Generate Composer Classification Matrix
 
 ```bash
-python import_dataset.py
+python composer_matrix.py
 ```
+
+This creates a 3×3 accuracy matrix for the top 3 composers (albeniz, bach, alkan) and generates:
+- `composer_matrix.png` - Accuracy matrix heatmap
+- `threshold_albeniz_vs_bach.png` - Threshold optimization graph
+- `threshold_albeniz_vs_alkan.png` - Threshold optimization graph
+- `threshold_bach_vs_alkan.png` - Threshold optimization graph
+
+Each pair uses least squares to solve **Ax = b** where A is the feature matrix, x is the weight vector, and b is the binary labels.
 
 ## Project Structure
 
 - **preprocess_midi.py** - Main preprocessing pipeline
-- **load_data.py** - Utilities to load and inspect preprocessed data
-- **import_dataset.py** - Dataset exploration script
+- **composer_matrix.py** - Binary classification matrix generator
+- **load_data.py** - Utilities to load preprocessed data
 - **data/** - Preprocessed feature matrices and labels
-- **PREPROCESSING_README.md** - Detailed preprocessing documentation
-- **MIDI_DATA_EXPLANATION.md** - MIDI format reference
 
 ## Dataset Information
 
