@@ -102,8 +102,9 @@ def extract_midi_features(midi: pretty_midi.PrettyMIDI) -> Dict[str, float]:
         }
 
     duration_sec = float(midi.get_end_time())
-    tempos = midi.estimate_tempo_changes()
-    tempo_values = tempos[1] if len(tempos) == 2 else np.array([midi.estimate_tempo()])
+    tempo_times, tempo_values = midi.get_tempo_changes()
+    if tempo_values.size == 0:
+        tempo_values = np.array([midi.estimate_tempo()])
     tempo_mean = float(np.mean(tempo_values))
     tempo_std = float(np.std(tempo_values))
 

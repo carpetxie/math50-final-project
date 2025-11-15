@@ -10,6 +10,7 @@ import io
 import requests
 from datasets import Dataset, load_dataset
 import pretty_midi
+from urllib.parse import urlparse, urljoin
 
 
 DEFAULT_URL_COLUMN = "file_name"
@@ -63,6 +64,16 @@ def load_hf_dataset(
     return dataset
 
 
+def _resolve_url(url: str, base_url: Optional[str]) -> str:
+    """Return an absolute URL, using ``base_url`` if the URL is relative."""
+    parsed = urlparse(url)
+    if parsed.scheme:
+        return url
+    if base_url is None:
+        raise MidiDownloadError(f"Missing scheme for URL '{url}' and no base URL provided.")
+    return urljoin(base_url, url)
+
+
 def load_midi_from_url(url: str, *, timeout: int = 30) -> pretty_midi.PrettyMIDI:
     """Download a MIDI file from a URL and parse it with ``pretty_midi``."""
 
@@ -103,6 +114,7 @@ def extract_features_from_dataset(
     max_items: Optional[int] = None,
     composer_from_url: Optional[Callable[[str], Optional[str]]] = None,
     progress_callback: Optional[Callable[[int], None]] = None,
+    base_url: Optional[str] = None,
 ) -> Iterable[MidiFeatureResult]:
     """Stream features from a dataset by fetching each remote MIDI file."""
 
@@ -112,14 +124,23 @@ def extract_features_from_dataset(
         if url_column not in row:
             continue
 
-        url = row[url_column]
+        raw_url = row[url_column]
+        try:
+            url = _resolve_url(raw_url, base_url)
+        except MidiDownloadError:
+            continue
 
         try:
             midi = load_midi_from_url(url)
         except MidiDownloadError:
             continue
 
-        feature_values = feature_fn(midi)
+        try:
+            feature_values = feature_fn(midi)
+        except MemoryError:
+            continue
+        except Exception:
+            continue
 
         metadata: Dict[str, str] = {"file_url": url}
         if composer_from_url is not None:
