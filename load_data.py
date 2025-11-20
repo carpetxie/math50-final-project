@@ -94,7 +94,7 @@ def get_composer_labels(Y):
 
 def filter_by_composer(X, Y, composers):
     """
-    Filter data to only include specified composers.
+    Filter dat to only include specified composers.
     
     Args:
         X: Feature matrix
