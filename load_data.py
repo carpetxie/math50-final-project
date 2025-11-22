@@ -1,25 +1,9 @@
-"""
-Utility script to load and inspect preprocessed MIDI data.
-"""
-
 import numpy as np
 import pickle
 from pathlib import Path
 
 
 def load_preprocessed_data(data_dir="data"):
-    """
-    Load preprocessed X and Y data.
-    
-    Args:
-        data_dir: Directory containing the data files
-        
-    Returns:
-        Tuple of (X, Y, feature_names) where:
-        - X is a numpy array of shape (n_segments, 9)
-        - Y is a list of (composer, piece) tuples
-        - feature_names is a list of feature names
-    """
     X = np.load(f"{data_dir}/X_features.npy")
     
     with open(f"{data_dir}/Y_labels.pkl", "rb") as f:
@@ -32,7 +16,6 @@ def load_preprocessed_data(data_dir="data"):
 
 
 def print_data_summary(X, Y, feature_names):
-    """Print a summary of the loaded data."""
     print("=" * 80)
     print("DATA SUMMARY")
     print("=" * 80)
@@ -80,30 +63,10 @@ def print_data_summary(X, Y, feature_names):
 
 
 def get_composer_labels(Y):
-    """
-    Extract just composer names for classification.
-    
-    Args:
-        Y: List of (composer, piece) tuples
-        
-    Returns:
-        List of composer names
-    """
     return [composer for composer, piece in Y]
 
 
 def filter_by_composer(X, Y, composers):
-    """
-    Filter dat to only include specified composers.
-    
-    Args:
-        X: Feature matrix
-        Y: List of (composer, piece) tuples
-        composers: List of composer names to include
-        
-    Returns:
-        Tuple of (X_filtered, Y_filtered)
-    """
     indices = [i for i, (composer, piece) in enumerate(Y) if composer in composers]
     X_filtered = X[indices]
     Y_filtered = [Y[i] for i in indices]

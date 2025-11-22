@@ -1,11 +1,3 @@
-"""
-Feature ablation study to determine which features are most important
-for classifying each composer.
-
-For each composer, performs binary classification (this composer vs all others)
-and ablates each feature to measure its impact on accuracy.
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 from load_data import load_preprocessed_data, get_composer_labels
@@ -13,7 +5,6 @@ from collections import Counter
 
 
 def encode_binary_labels(Y, target_composer):
-    """Encode labels as 1 for target composer, 0 for all others."""
     labels = []
     for composer, piece in Y:
         labels.append(1 if composer == target_composer else 0)
@@ -21,14 +12,12 @@ def encode_binary_labels(Y, target_composer):
 
 
 def add_bias_column(X):
-    """Add a column of ones for the bias/intercept term."""
     n_samples = X.shape[0]
     bias = np.ones((n_samples, 1))
     return np.hstack([bias, X])
 
 
 def standardize_features(X_train, X_test):
-    """Standardize features to have mean 0 and std 1."""
     mean = np.mean(X_train, axis=0)
     std = np.std(X_train, axis=0)
     std = np.where(std == 0, 1, std)
@@ -38,14 +27,12 @@ def standardize_features(X_train, X_test):
 
 
 def solve_least_squares(A, b):
-    """Solve Ax = b using least squares: x = (A^T A)^(-1) A^T b"""
     ATA = A.T @ A
     x = np.linalg.solve(ATA, A.T @ b)
     return x
 
 
 def calculate_balanced_accuracy(y_pred, y_true):
-    """Calculate balanced accuracy (accounts for class imbalance)."""
     tp = np.sum((y_pred == 1) & (y_true == 1))
     tn = np.sum((y_pred == 0) & (y_true == 0))
     fp = np.sum((y_pred == 1) & (y_true == 0))
@@ -59,7 +46,6 @@ def calculate_balanced_accuracy(y_pred, y_true):
 
 
 def find_optimal_threshold(y_pred_raw, y_true):
-    """Find the optimal threshold that maximizes balanced accuracy."""
     min_pred = np.min(y_pred_raw)
     max_pred = np.max(y_pred_raw)
     thresholds = np.linspace(min_pred, max_pred, 100)
@@ -77,20 +63,6 @@ def find_optimal_threshold(y_pred_raw, y_true):
 
 
 def classify_with_features(X, y, feature_indices, test_size=0.3, random_seed=42):
-    """
-    Perform binary classification using only specified features.
-    
-    Args:
-        X: Full feature matrix
-        y: Binary labels
-        feature_indices: List of feature indices to use
-        test_size: Proportion of data for testing
-        random_seed: Random seed for reproducibility
-        
-    Returns:
-        Test accuracy
-    """
-    # Select only specified features
     X_subset = X[:, feature_indices]
     
     # Split train/test
@@ -134,18 +106,6 @@ def classify_with_features(X, y, feature_indices, test_size=0.3, random_seed=42)
 
 
 def ablation_study_for_composer(X, Y, target_composer, feature_names):
-    """
-    Perform ablation study for one composer.
-    
-    Args:
-        X: Feature matrix
-        Y: List of (composer, piece) tuples
-        target_composer: Composer to classify (vs all others)
-        feature_names: List of feature names
-        
-    Returns:
-        Dictionary with baseline accuracy and accuracy changes per feature
-    """
     print(f"\nAblation study for {target_composer}...")
     print("-" * 60)
     
@@ -190,14 +150,6 @@ def ablation_study_for_composer(X, Y, target_composer, feature_names):
 
 
 def create_ablation_heatmap(results, composer_names, feature_names):
-    """
-    Create a heatmap showing accuracy changes from feature ablation.
-    
-    Args:
-        results: Dictionary of results for each composer
-        composer_names: List of composer names
-        feature_names: List of feature names
-    """
     n_features = len(feature_names)
     n_composers = len(composer_names)
     
@@ -252,7 +204,6 @@ def create_ablation_heatmap(results, composer_names, feature_names):
 
 
 def print_summary(results, composer_names):
-    """Print summary of most important features per composer."""
     print("\n" + "=" * 80)
     print("FEATURE IMPORTANCE SUMMARY")
     print("=" * 80)

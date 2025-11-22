@@ -1,8 +1,3 @@
-"""
-Simple logistic regression for binary classification between pairs of composers.
-Creates a 3x3 accuracy matrix similar to composer_matrix.py but using logistic regression.
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 from load_data import load_preprocessed_data, get_composer_labels
@@ -12,7 +7,6 @@ from sklearn.preprocessing import StandardScaler
 
 
 def encode_labels(Y, composer_names):
-    """Encode composer labels as binary: 0 for first composer, 1 for second."""
     labels = []
     for composer, piece in Y:
         if composer == composer_names[0]:
@@ -25,7 +19,6 @@ def encode_labels(Y, composer_names):
 
 
 def calculate_balanced_accuracy(y_pred, y_true):
-    """Calculate balanced accuracy (accounts for class imbalance)."""
     tp = np.sum((y_pred == 1) & (y_true == 1))
     tn = np.sum((y_pred == 0) & (y_true == 0))
     fp = np.sum((y_pred == 1) & (y_true == 0))
@@ -39,7 +32,6 @@ def calculate_balanced_accuracy(y_pred, y_true):
 
 
 def evaluate_classifier(y_pred, y_true):
-    """Evaluate classifier performance."""
     balanced_acc = calculate_balanced_accuracy(y_pred, y_true)
     accuracy = np.mean(y_pred == y_true)
     tp = np.sum((y_pred == 1) & (y_true == 1))
@@ -52,7 +44,6 @@ def evaluate_classifier(y_pred, y_true):
 
 
 def binary_classify_pair_logistic(X, Y, composer1, composer2, test_size=0.3, random_seed=42):
-    """Perform binary logistic regression between two composers."""
     # Filter to only these two composers
     indices = [i for i, (composer, piece) in enumerate(Y) 
                if composer == composer1 or composer == composer2]

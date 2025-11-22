@@ -1,12 +1,3 @@
-"""
-Comprehensive linear regression analysis incorporating Units 4-6 concepts:
-- Unit 4: Multiple predictor regression, coefficient interpretation, R², correlation matrix
-- Unit 5: Interaction terms, residual plots, bias-variance tradeoff
-- Unit 6: Regularization (ridge regression), Bayesian perspective
-
-This script performs regression analysis to predict composer indicators from musical features.
-"""
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -22,16 +13,6 @@ warnings.filterwarnings('ignore')
 
 
 def prepare_data_for_regression(X, Y, composers=['albeniz', 'bach', 'alkan']):
-    """
-    Prepare data for multi-output regression (composer indicators).
-    Focuses on top 3 composers with most data: albeniz, bach, alkan.
-    
-    Returns:
-        X: Feature matrix
-        y: One-hot encoded composer indicators
-        composer_names: List of composer names
-        feature_names: List of feature names
-    """
     composer_labels = get_composer_labels(Y)
     
     # Filter to specified composers (top 3 with most data)
@@ -47,10 +28,6 @@ def prepare_data_for_regression(X, Y, composers=['albeniz', 'bach', 'alkan']):
 
 
 def analyze_correlation_matrix(X, feature_names, title="Correlation Matrix of Features"):
-    """
-    Unit 4: Analyze correlation matrix to understand multicollinearity.
-    High correlations indicate that single-predictor coefficients differ from multiple-predictor coefficients.
-    """
     corr_matrix = np.corrcoef(X.T)
     
     fig, ax = plt.subplots(figsize=(10, 8))

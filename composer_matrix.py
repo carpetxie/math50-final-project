@@ -1,8 +1,3 @@
-"""
-Create a square matrix showing binary classification accuracy
-between each pair of the top 3 composers, with threshold graphs for each pair.
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 from load_data import load_preprocessed_data, get_composer_labels
@@ -10,7 +5,6 @@ from collections import Counter
 
 
 def encode_labels(Y, composer_names):
-    """Encode composer labels as binary: 0 for first composer, 1 for second."""
     labels = []
     for composer, piece in Y:
         if composer == composer_names[0]:
@@ -23,14 +17,12 @@ def encode_labels(Y, composer_names):
 
 
 def add_bias_column(X):
-    """Add a column of ones for the bias/intercept term."""
     n_samples = X.shape[0]
     bias = np.ones((n_samples, 1))
     return np.hstack([bias, X])
 
 
 def standardize_features(X_train, X_test):
-    """Standardize features to have mean 0 and std 1."""
     mean = np.mean(X_train, axis=0)
     std = np.std(X_train, axis=0)
     std = np.where(std == 0, 1, std)
@@ -40,14 +32,12 @@ def standardize_features(X_train, X_test):
 
 
 def solve_least_squares(A, b):
-    """Solve Ax = b using least squares: x = (A^T A)^(-1) A^T b"""
     ATA = A.T @ A
     x = np.linalg.solve(ATA, A.T @ b)
     return x
 
 
 def calculate_balanced_accuracy(y_pred, y_true):
-    """Calculate balanced accuracy (accounts for class imbalance)."""
     tp = np.sum((y_pred == 1) & (y_true == 1))
     tn = np.sum((y_pred == 0) & (y_true == 0))
     fp = np.sum((y_pred == 1) & (y_true == 0))
@@ -61,7 +51,6 @@ def calculate_balanced_accuracy(y_pred, y_true):
 
 
 def find_optimal_threshold(y_pred_raw, y_true):
-    """Find the optimal threshold that maximizes balanced accuracy."""
     min_pred = np.min(y_pred_raw)
     max_pred = np.max(y_pred_raw)
     thresholds = np.linspace(min_pred, max_pred, 100)
@@ -79,7 +68,6 @@ def find_optimal_threshold(y_pred_raw, y_true):
 
 
 def evaluate_classifier(y_pred, y_true):
-    """Evaluate classifier performance."""
     balanced_acc = calculate_balanced_accuracy(y_pred, y_true)
     accuracy = np.mean(y_pred == y_true)
     tp = np.sum((y_pred == 1) & (y_true == 1))
@@ -92,7 +80,6 @@ def evaluate_classifier(y_pred, y_true):
 
 
 def binary_classify_pair(X, Y, composer1, composer2, test_size=0.3, random_seed=42):
-    """Perform binary classification between two composers."""
     # Filter to only these two composers
     indices = [i for i, (composer, piece) in enumerate(Y) 
                if composer == composer1 or composer == composer2]
@@ -157,7 +144,6 @@ def binary_classify_pair(X, Y, composer1, composer2, test_size=0.3, random_seed=
 
 
 def plot_threshold_graph(result, pair_num):
-    """Plot threshold optimization graph for a composer pair."""
     fig, ax = plt.subplots(figsize=(8, 6))
     
     # Calculate balanced accuracies for all thresholds
@@ -191,7 +177,6 @@ def plot_threshold_graph(result, pair_num):
 
 
 def create_composer_matrix(X, Y, top_n=3):
-    """Create a square matrix of binary classification accuracies."""
     composer_labels = get_composer_labels(Y)
     composer_counts = Counter(composer_labels)
     top_composers = [composer for composer, _ in composer_counts.most_common(top_n)]
@@ -232,7 +217,6 @@ def create_composer_matrix(X, Y, top_n=3):
 
 
 def visualize_matrix(accuracy_matrix, composer_names):
-    """Visualize the accuracy matrix as a heatmap."""
     fig, ax = plt.subplots(figsize=(8, 7))
     
     im = ax.imshow(accuracy_matrix, cmap='RdYlGn', vmin=0.5, vmax=1.0, aspect='auto')
