@@ -9,13 +9,13 @@ The hypothesis of this project is that a linear combination of musical parameter
 
 ## Literature Review
 
-Automatically identifying a composer from a musical piece is a central challenge in Music Information Retrieval (MIR). Our project engages with this problem by adopting a "global feature" approach, as supported by Herremans, Martens, and Sörensen (2016). In their study, they were able to classify pieces by Bach, Haydn, and Beethoven through 12 statistical features from symbolic music data, which validates our method of creating a musical "fingerprint" from MIDI segments.
+Automatically identifying a composer from a musical piece is a central challenge in Music Information Retrieval (MIR). Our project adopts a "global feature" approach, as supported by Herremans, Martens, and Sörensen (2016). In their study, they classified pieces by Bach, Haydn, and Beethoven through 12 statistical features from symbolic music data, which validates our method of creating a musical "fingerprint" from MIDI segments.
 
 While other studies have shown success with sequential "local feature" models like n-grams, the global approach is specifically chosen for its interpretability. As the MIR literature emphasizes, "strategies based on hand-crafted mid-level features are still of relevance" precisely because they "allow interpretable and controllable systems" that reveal *why* a classification was made, a goal often obscured in complex "black box" models (Chowdhury et al., 2022).
 
 Building on this foundation, our feature set includes sophisticated metrics, such as `ioi_entropy` (inter-onset interval entropy), to capture rhythmic complexity. This concept is well-supported by studies like Febres & Jaffe (2017), who propose viewing music through its "entropy content" and "symbolic diversity" as a powerful method for "music style recognition," and by research such as Gündüz (2023), which explores how entropy is inherently linked to musical order, complexity, and even perceived instability in melodies.
 
-For our classification model, we adopted a one-vs-one (OVO) strategy, decomposing the multi-composer problem into a series of binary classifiers. This approach is a standard and highly effective technique for multiclass classification, a conclusion supported by foundational comparative studies in the field (Hsu & Lin, 2002). By grounding our work in established methods (global features, entropy, and OVO classification), our project provides a robust analysis that quantifies the stylistic "fingerprints" of different composers.
+For our classification model, we adopted a one-vs-one (OVO) strategy, decomposing the multi-composer problem into a series of binary classifiers. This approach is a standard and effective technique for multiclass classification, supported by comparative studies in the field (Hsu & Lin, 2002). By using established methods (global features, entropy, and OVO classification), our project quantifies the stylistic "fingerprints" of different composers.
 
 ## Dataset
 
