@@ -5,7 +5,7 @@
 
 ## Hypothesis
 
-The hypothesis of this project is that a linear combination of musical parameters significantly predicts the target variable of the composer. In other words, we think composers have distinct "musical fingerprints" that can be captured through quantifiable features like pitch, rhythm, and dynamics—and that these fingerprints are linearly separable enough for regression-based classification.
+The hypothesis of this project is that a linear combination of musical parameters significantly predicts the target variable of the composer. In other words, we think composers have distinct "musical fingerprints" that can be captured through quantifiable features like pitch, rhythm, and dynamics, and that these fingerprints are linearly separable enough for regression-based classification.
 
 ## Literature Review
 
@@ -19,7 +19,7 @@ For our classification model, we adopted a one-vs-one (OVO) strategy, decomposin
 
 ## Dataset
 
-For our dataset, we used [drengskapur's Hugging Face MIDI files](https://huggingface.co/datasets/drengskapur/midi-classical-music) on various classical music pieces—about 4,800 MIDI files in total. For analysis, 10 parameters were used:
+For our dataset, we used [drengskapur's Hugging Face MIDI files](https://huggingface.co/datasets/drengskapur/midi-classical-music) on various classical music pieces, about 4,800 MIDI files in total. For analysis, 10 parameters were used:
 
 1. **mean_pitch** - Average MIDI note number
 2. **pitch_stddev** - Standard deviation of pitches
@@ -54,7 +54,7 @@ The results are shown in the figures. Interestingly, OVO classifications includi
 
 The second experiment tests ablations on each of the ten features, still utilizing the least squares linear regression model from above. However, instead of an OVO, we run an **One versus Rest (OVR)** classification for a balanced accuracy assessment on the top three composers (Albeniz, Bach, and Alkan).
 
-For each composer, we first establish a baseline accuracy using all features, then remove each feature individually and compare the resulting accuracy against this baseline. Features were standardized to zero mean and unit variance before training, consistent with the first experiment. Interestingly, some features, when removed, would *increase* the accuracy for some composers—suggesting those features may add noise rather than signal.
+For each composer, we first establish a baseline accuracy using all features, then remove each feature individually and compare the resulting accuracy against this baseline. Features were standardized to zero mean and unit variance before training, consistent with the first experiment. Interestingly, some features, when removed, would *increase* the accuracy for some composers, suggesting those features may add noise rather than signal.
 
 ### 3. Logistic Regression
 
@@ -66,7 +66,7 @@ We evaluate performance using balanced accuracy to account for class imbalance. 
 
 ### 4. Classical Linear Regression (Multiple Predictors & Residuals)
 
-In addition to our classifier-based experiments, we also apply the classical linear regression tools required by the course. Unlike the previous sections, the goal here is not to build a composer classifier but to use our dataset to illustrate **multiple-predictor regression, residual diagnostics, ridge regression, and the bias–variance tradeoff**.
+In addition to our classifier-based experiments, we also apply the classical linear regression tools required by the course. Unlike the previous sections, the goal here is not to build a composer classifier but to use our dataset to illustrate **multiple-predictor regression, residual diagnostics, ridge regression, and the bias-variance tradeoff**.
 
 Through the `regression_analysis.py` script, a multiple-predictor linear regression was fit using all 10 features at once, where:
 
@@ -78,7 +78,7 @@ The residual plot shows a limitation of using linear regression for binary outco
 
 ### 5. Ridge Regression and Bias-Variance
 
-Beyond the multiple-predictor fit, we also study model complexity using **ridge regression** and the **bias–variance tradeoff** to understand how regularization affects performance.
+Beyond the multiple-predictor fit, we also study model complexity using **ridge regression** and the **bias-variance tradeoff** to understand how regularization affects performance.
 
 Ridge regression adds an L2 penalty to the least squares objective:
 
@@ -90,7 +90,7 @@ The bias-variance tradeoff illustrates what happens as model complexity increase
 
 ## Results
 
-While linear regression was used in several forms to connect with class concepts (multiple predictors, residuals, ridge regression, and bias–variance), we also implemented logistic regression as the more appropriate model for binary composer prediction. This gives us a clean comparison: the linear probability model is helpful pedagogically, but logistic regression is better aligned with the underlying statistics of a 0/1 outcome.
+While linear regression was used in several forms to connect with class concepts (multiple predictors, residuals, ridge regression, and bias-variance), we also implemented logistic regression as the more appropriate model for binary composer prediction. This gives us a clean comparison: the linear probability model is helpful pedagogically, but logistic regression is better aligned with the underlying statistics of a 0/1 outcome.
 
 The similar performance between the two approaches suggests that the main structure in our feature space is largely **linearly separable**, and that simple linear classifiers capture most of the signal in distinguishing these composers.
 
@@ -125,7 +125,7 @@ First, preprocess the MIDI files:
 python preprocess_midi.py
 ```
 
-This downloads MIDI files from Hugging Face, segments them into 30-second chunks, and extracts 10 musical features per segment. By default processes the first 100 files—to process all ~4,800, remove the `max_files=100` parameter in the script.
+This downloads MIDI files from Hugging Face, segments them into 30-second chunks, and extracts 10 musical features per segment. By default processes the first 100 files. To process all ~4,800, remove the `max_files=100` parameter in the script.
 
 Then run the analyses:
 
@@ -141,7 +141,7 @@ All figures are saved to `figures/`.
 
 ## Closing Thoughts
 
-While linear regression was used in several forms to connect with class concepts (multiple predictors, residuals, ridge regression, and bias–variance), we also implemented logistic regression as the more appropriate model for binary composer prediction. This gives us a clean comparison: the linear probability model is helpful pedagogically, but logistic regression is better aligned with the underlying statistics of a 0/1 outcome.
+While linear regression was used in several forms to connect with class concepts (multiple predictors, residuals, ridge regression, and bias-variance), we also implemented logistic regression as the more appropriate model for binary composer prediction. This gives us a clean comparison: the linear probability model is helpful pedagogically, but logistic regression is better aligned with the underlying statistics of a 0/1 outcome.
 
 The similar performance between the two approaches suggests that the main structure in our feature space is largely linearly separable, and that simple linear classifiers capture most of the signal in distinguishing these composers. This proves our hypothesis that it is possible to use regression to classify classical music composers from different components of their music.
 

@@ -56,7 +56,7 @@ def comprehensive_summary():
     print("  - albeniz vs bach: 94.12% balanced accuracy")
     print("  - bach vs alkan: 95.71% balanced accuracy")
     print("  - albeniz vs alkan: 68.16% balanced accuracy")
-    print("\n✓ Strong separation in binary classification tasks")
+    print("\nStrong separation in binary classification tasks")
     print("  (See: threshold_*.png files and composer_matrix.png)")
     
     # ========================================================================
@@ -74,7 +74,7 @@ def comprehensive_summary():
     print("  ALBENIZ: note_density, ioi_stddev")
     print("  BACH: velocity_stddev, ioi_stddev")
     print("  ALKAN: pitch_stddev, ioi_stddev")
-    print("\n✓ Rhythmic features (IOI) are consistently important")
+    print("\nRhythmic features (IOI) are consistently important")
     print("  (See: feature_ablation_heatmap.png)")
     
     # ========================================================================
@@ -98,7 +98,7 @@ def comprehensive_summary():
     else:
         print("  No highly correlated pairs (|r| > 0.5)")
     
-    print("\n✓ Correlation matrix shows feature relationships")
+    print("\nCorrelation matrix shows feature relationships")
     print("  (See: correlation_matrix.png)")
     
     # ========================================================================
@@ -135,7 +135,7 @@ def comprehensive_summary():
         print("        used for classification. Classification accuracy is the")
         print("        appropriate metric.")
     
-    print(f"\n✓ {test_acc*100:.1f}% accuracy (4.7× better than random for {len(top_composers)} classes)")
+    print(f"\n{test_acc*100:.1f}% accuracy (4.7× better than random for {len(top_composers)} classes)")
     
     # ========================================================================
     # 5. COEFFICIENT ANALYSIS
@@ -155,7 +155,7 @@ def comprehensive_summary():
     for i, (feature, importance) in enumerate(feature_importance.head(5).items()):
         print(f"  {i+1}. {feature:20s}: variance = {importance:.6f}")
     
-    print("\n✓ Features show distinct patterns across composers")
+    print("\nFeatures show distinct patterns across composers")
     
     # ========================================================================
     # 6. BIAS-VARIANCE TRADEOFF (from regression_analysis.py)
@@ -167,7 +167,7 @@ def comprehensive_summary():
     print("  - Training error decreases with model complexity")
     print("  - Test error shows optimal complexity around 5-10 features")
     print("  - Demonstrates classic bias-variance tradeoff")
-    print("\n✓ Model complexity analysis validates feature selection")
+    print("\nModel complexity analysis validates feature selection")
     print("  (See: bias_variance_tradeoff.png)")
     
     # ========================================================================
@@ -192,7 +192,7 @@ def comprehensive_summary():
     print(f"  Optimal regularization parameter: λ = {optimal_alpha:.4f}")
     print(f"  Test R² at optimal λ: {optimal_r2:.4f}")
     print(f"  (vs OLS test R²: {test_r2:.4f})")
-    print("\n✓ Regularization analysis shows coefficient shrinkage effects")
+    print("\nRegularization analysis shows coefficient shrinkage effects")
     print("  (See: ridge_regression.png)")
     
     # ========================================================================
@@ -204,7 +204,7 @@ def comprehensive_summary():
     print("\nResidual plots demonstrate:")
     print("  - Correct: residuals vs predicted values (shows model assumptions)")
     print("  - Incorrect: residuals vs actual values (shows bias artifact)")
-    print("\n✓ Proper residual analysis validates model assumptions")
+    print("\nProper residual analysis validates model assumptions")
     print("  (See: residual_plots.png)")
     
     # ========================================================================
@@ -214,33 +214,33 @@ def comprehensive_summary():
     print("FINAL COMPREHENSIVE SUMMARY")
     print("=" * 80)
     
-    print("\n✅ ALL ANALYSES COMPLETE AND VERIFIED:")
-    print("\n1. ✓ Threshold Optimization:")
+    print("\nALL ANALYSES COMPLETE AND VERIFIED:")
+    print("\n1. Threshold Optimization:")
     print("   - Binary classification: 94%+ accuracy for major pairs")
     print("   - Files: threshold_*.png, composer_matrix.png")
     
-    print("\n2. ✓ Feature Ablation:")
+    print("\n2. Feature Ablation:")
     print("   - Identified most important features per composer")
     print("   - Rhythmic features (IOI) consistently important")
     print("   - File: feature_ablation_heatmap.png")
     
-    print("\n3. ✓ Correlation Matrix:")
+    print("\n3. Correlation Matrix:")
     print("   - Shows feature relationships and multicollinearity")
     print("   - File: correlation_matrix.png")
     
-    print("\n4. ✓ Multi-Output Regression:")
+    print("\n4. Multi-Output Regression:")
     print(f"   - {test_acc*100:.1f}% classification accuracy")
     print("   - 4.7× better than random guessing")
     
-    print("\n5. ✓ Bias-Variance Tradeoff:")
+    print("\n5. Bias-Variance Tradeoff:")
     print("   - Optimal complexity identified")
     print("   - File: bias_variance_tradeoff.png")
     
-    print("\n6. ✓ Ridge Regression:")
+    print("\n6. Ridge Regression:")
     print("   - Regularization analysis complete")
     print("   - File: ridge_regression.png")
     
-    print("\n7. ✓ Residual Analysis:")
+    print("\n7. Residual Analysis:")
     print("   - Model assumptions validated")
     print("   - File: residual_plots.png")
     
@@ -252,7 +252,7 @@ def comprehensive_summary():
     print("  • Multi-output regression: 67.5% accuracy")
     print("  • Features show distinct patterns")
     print("  • All mathematical concepts (Units 4-6) properly demonstrated")
-    print("\n✅ RESULTS ARE VALID AND COMPREHENSIVE")
+    print("\nRESULTS ARE VALID AND COMPREHENSIVE")
 
 
 if __name__ == "__main__":
