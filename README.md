@@ -60,7 +60,7 @@ For each composer, we first establish a baseline accuracy using all features, th
 
 For our third experiment, we repeated the OVO classification between each pair of composers (Albeniz, Bach, and Alkan) using **logistic regression** instead of least squares. Features were standardized to zero mean and unit variance before training, consistent with the previous experiments.
 
-Unlike least squares, logistic regression models the probability of class membership directly through the logistic function, which naturally constrains outputs to the range [0, 1]. This eliminates the need for threshold optimization, as the decision boundary is fixed at 0.5 probability. The model finds optimal parameter weightings that maximize the likelihood of the observed binary labels.
+Unlike least squares, logistic regression models the probability of class membership directly through the logistic function, constraining outputs to [0, 1] with a fixed decision boundary at 0.5 probability.
 
 We evaluate performance using balanced accuracy to account for class imbalance. The accuracy values are nearly identical to those from the least squares approach, with Albeniz vs Bach at 0.943, Bach vs Alkan at 0.977, and Albeniz vs Alkan at 0.688. This similarity is expected, as both methods are linear classifiers that differ primarily in their optimization objectives and output interpretation.
 
@@ -84,9 +84,9 @@ Ridge regression adds an L2 penalty to the least squares objective:
 
 **minimize ||y - Xβ||² + λ||β||²**
 
-This is equivalent to Bayesian regression with Normal(0, τ²) priors on the coefficients. As λ increases, coefficients shrink toward zero, producing a simpler model. The optimal λ is found by maximizing test R², which balances fitting the training data with generalization.
+This is equivalent to Bayesian regression with Normal(0, τ²) priors on the coefficients. As λ increases, coefficients shrink toward zero, producing a simpler model.
 
-The bias-variance tradeoff illustrates a fundamental machine learning concept: as model complexity increases, training error decreases (lower bias), while test error eventually increases (higher variance). Since MSE = Variance + Bias², the test MSE forms the expected U-shaped curve. Even though Y is binary-coded, these diagnostics remain valid because they evaluate the continuous fitted predictions ŷ, which are later thresholded for classification.
+The bias-variance tradeoff illustrates what happens as model complexity increases: training error decreases (lower bias), while test error eventually increases (higher variance). Since MSE = Variance + Bias², the test MSE forms the expected U-shaped curve.
 
 ## Results
 
@@ -109,133 +109,35 @@ However, many open questions remain for discovery:
 - How does segment length affect the results (we used 30-second intervals)?
 - How does polynomial regression (or other types of nonlinear regression) increase or decrease the accuracy of the prediction model?
 
-## Setup & Usage
+## Setup
 
-### Installation
-
-1. Create a virtual environment and install dependencies:
+Install dependencies:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Running the Analysis
+## Running the Analysis
 
-#### Step 1: Preprocess MIDI Files
+First, preprocess the MIDI files:
 
 ```bash
 python preprocess_midi.py
 ```
 
-This downloads MIDI files from Hugging Face, segments pieces into 30-second chunks, extracts 10 musical features per segment, and saves to `data/X_features.npy` and `data/Y_labels.pkl`.
+This downloads MIDI files from Hugging Face, segments them into 30-second chunks, and extracts 10 musical features per segment. By default processes the first 100 files—to process all ~4,800, remove the `max_files=100` parameter in the script.
 
-*Note: By default, it processes the first 100 files. To process all ~4,800 files, edit `preprocess_midi.py` and remove the `max_files=100` parameter.*
-
-#### Step 2: Generate Binary Classification Matrix
+Then run the analyses:
 
 ```bash
-python composer_matrix.py
+python composer_matrix.py              # Generates binary classification matrix
+python feature_ablation.py             # Tests feature importance
+python logistic_regression.py          # Logistic regression classifier
+python regression_analysis.py          # Comprehensive regression analysis
+python comprehensive_results_summary.py # Aggregated results
 ```
 
-This creates a 3×3 accuracy matrix for the top 3 composers and generates threshold optimization graphs showing how classification accuracy changes with different decision thresholds.
-
-**Outputs:**
-- `figures/composer_matrix.png` - Accuracy matrix heatmap
-- `figures/threshold_*.png` - Threshold optimization graphs for each pair
-
-#### Step 3: Feature Ablation Study
-
-```bash
-python feature_ablation.py
-```
-
-This removes each feature individually to assess its contribution to classification accuracy.
-
-**Outputs:**
-- `figures/feature_ablation_heatmap.png` - Feature importance heatmap
-
-#### Step 4: Logistic Regression Analysis
-
-```bash
-python logistic_regression.py
-```
-
-This repeats the OVO classification using logistic regression instead of least squares for comparison.
-
-**Outputs:**
-- `figures/logistic_composer_matrix.png` - Logistic regression accuracy matrix
-- `figures/logistic_*.png` - Decision boundary visualizations for each pair
-
-#### Step 5: Comprehensive Regression Analysis
-
-```bash
-python regression_analysis.py
-```
-
-This performs comprehensive linear regression analysis incorporating mathematical concepts from the course: multiple-predictor regression, correlation analysis, residual diagnostics, bias-variance tradeoff, and ridge regression.
-
-**Outputs:**
-- `figures/correlation_matrix.png` - Feature correlation heatmap
-- `figures/residual_plots.png` - Residual analysis (correct vs incorrect)
-- `figures/bias_variance_tradeoff.png` - Training vs test error by model complexity
-- `figures/ridge_regression.png` - R² and coefficient norms vs regularization parameter
-
-#### Step 6: View Comprehensive Results Summary
-
-```bash
-python comprehensive_results_summary.py
-```
-
-This aggregates and summarizes ALL analyses, providing a complete overview of composer separation and model performance.
-
-## Project Structure
-
-```
-math50-project/
-├── data/                           # Preprocessed feature matrices and labels
-│   ├── X_features.npy             # Feature matrix (385 segments × 10 features)
-│   ├── Y_labels.pkl               # Composer/piece labels
-│   └── feature_names.txt          # Feature names
-├── figures/                        # All generated plots and visualizations
-│   ├── composer_matrix.png
-│   ├── threshold_*.png
-│   ├── feature_ablation_heatmap.png
-│   ├── logistic_*.png
-│   ├── correlation_matrix.png
-│   ├── residual_plots.png
-│   ├── bias_variance_tradeoff.png
-│   └── ridge_regression.png
-├── preprocess_midi.py             # Main preprocessing pipeline
-├── load_data.py                   # Data loading utilities
-├── composer_matrix.py             # Binary classification matrix (least squares)
-├── feature_ablation.py            # Feature importance via ablation
-├── logistic_regression.py         # Logistic regression classifier
-├── regression_analysis.py         # Comprehensive regression analysis
-├── comprehensive_results_summary.py  # Aggregated results summary
-├── REGRESSION_ANALYSIS_EXPLANATION.md  # Detailed explanation of regression analysis
-├── RESULTS_ANALYSIS.md            # Verification of results and findings
-└── requirements.txt               # Python dependencies
-```
-
-## Figures
-
-All generated figures are in the `figures/` directory:
-
-1. **composer_matrix.png** - 3×3 heatmap showing balanced accuracy for each composer pair using least squares
-2. **threshold_albeniz_vs_bach.png** - Threshold optimization for Albeniz vs Bach
-3. **threshold_albeniz_vs_alkan.png** - Threshold optimization for Albeniz vs Alkan
-4. **threshold_bach_vs_alkan.png** - Threshold optimization for Bach vs Alkan
-5. **feature_ablation_heatmap.png** - Feature importance via ablation study (OVR)
-6. **logistic_composer_matrix.png** - 3×3 heatmap using logistic regression
-7. **logistic_albeniz_vs_bach.png** - Logistic regression decision boundary
-8. **logistic_albeniz_vs_alkan.png** - Logistic regression decision boundary
-9. **logistic_bach_vs_alkan.png** - Logistic regression decision boundary
-10. **correlation_matrix.png** - Feature correlation analysis
-11. **residual_plots.png** - Residual diagnostics (correct vs incorrect plots)
-12. **bias_variance_tradeoff.png** - Training vs test error by model complexity
-13. **ridge_regression.png** - Ridge regression performance and coefficient shrinkage
+All figures are saved to `figures/`.
 
 ## Closing Thoughts
 
