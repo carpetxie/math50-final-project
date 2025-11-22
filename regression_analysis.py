@@ -73,8 +73,8 @@ def analyze_correlation_matrix(X, feature_names, title="Correlation Matrix of Fe
     
     ax.set_title(title, fontsize=14, pad=20)
     plt.tight_layout()
-    plt.savefig('correlation_matrix.png', dpi=150, bbox_inches='tight')
-    print(f"Saved: correlation_matrix.png")
+    plt.savefig('figures/correlation_matrix.png', dpi=150, bbox_inches='tight')
+    print(f"Saved: figures/correlation_matrix.png")
     plt.close()
     
     return corr_matrix
@@ -242,8 +242,8 @@ def plot_residuals(y_true, y_pred, title="Residual Plot"):
     
     plt.suptitle(title, fontsize=14, y=1.02)
     plt.tight_layout()
-    plt.savefig('residual_plots.png', dpi=150, bbox_inches='tight')
-    print(f"Saved: residual_plots.png")
+    plt.savefig('figures/residual_plots.png', dpi=150, bbox_inches='tight')
+    print(f"Saved: figures/residual_plots.png")
     plt.close()
 
 
@@ -306,8 +306,8 @@ def bias_variance_analysis(X, y, feature_names, composer_names, n_splits=10):
     ax.legend(fontsize=11)
     ax.grid(alpha=0.3)
     plt.tight_layout()
-    plt.savefig('bias_variance_tradeoff.png', dpi=150, bbox_inches='tight')
-    print(f"Saved: bias_variance_tradeoff.png")
+    plt.savefig('figures/bias_variance_tradeoff.png', dpi=150, bbox_inches='tight')
+    print(f"Saved: figures/bias_variance_tradeoff.png")
     plt.close()
     
     print(f"\nComplexity Analysis:")
@@ -372,8 +372,8 @@ def ridge_regression_analysis(X_train, X_test, y_train, y_test, feature_names, c
     axes[1].grid(alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('ridge_regression.png', dpi=150, bbox_inches='tight')
-    print(f"Saved: ridge_regression.png")
+    plt.savefig('figures/ridge_regression.png', dpi=150, bbox_inches='tight')
+    print(f"Saved: figures/ridge_regression.png")
     plt.close()
     
     # Compare coefficients

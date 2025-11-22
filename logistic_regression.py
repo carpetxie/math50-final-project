@@ -153,7 +153,7 @@ def plot_probability_distribution(result, pair_num):
                  fontsize=14)
     
     plt.tight_layout()
-    filename = f'logistic_{result["composer1"]}_vs_{result["composer2"]}.png'
+    filename = f'figures/logistic_{result["composer1"]}_vs_{result["composer2"]}.png'
     plt.savefig(filename, dpi=150, bbox_inches='tight')
     print(f"  Saved: {filename}")
     plt.close()
@@ -230,8 +230,8 @@ def visualize_matrix(accuracy_matrix, composer_names):
                  fontsize=14, pad=20)
     
     plt.tight_layout()
-    plt.savefig('logistic_composer_matrix.png', dpi=150, bbox_inches='tight')
-    print("\nMatrix visualization saved as 'logistic_composer_matrix.png'")
+    plt.savefig('figures/logistic_composer_matrix.png', dpi=150, bbox_inches='tight')
+    print("\nMatrix visualization saved as 'figures/logistic_composer_matrix.png'")
     plt.close()
 
 

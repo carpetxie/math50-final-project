@@ -246,7 +246,7 @@ def create_ablation_heatmap(results, composer_names, feature_names):
                  fontsize=14, pad=20)
     
     plt.tight_layout()
-    plt.savefig('feature_ablation_heatmap.png', dpi=150, bbox_inches='tight')
+    plt.savefig('figures/feature_ablation_heatmap.png', dpi=150, bbox_inches='tight')
     print("\nHeatmap saved as 'feature_ablation_heatmap.png'")
     plt.show()
 

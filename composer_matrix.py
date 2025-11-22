@@ -184,7 +184,7 @@ def plot_threshold_graph(result, pair_num):
     ax.set_ylim([0.5, 1.0])
     
     plt.tight_layout()
-    filename = f'threshold_{result["composer1"]}_vs_{result["composer2"]}.png'
+    filename = f'figures/threshold_{result["composer1"]}_vs_{result["composer2"]}.png'
     plt.savefig(filename, dpi=150, bbox_inches='tight')
     print(f"  Saved: {filename}")
     plt.close()
@@ -260,8 +260,8 @@ def visualize_matrix(accuracy_matrix, composer_names):
     ax.set_title('Binary Classification Balanced Accuracy Matrix\n(Normalized for Class Imbalance)', fontsize=14, pad=20)
     
     plt.tight_layout()
-    plt.savefig('composer_matrix.png', dpi=150, bbox_inches='tight')
-    print("\nMatrix visualization saved as 'composer_matrix.png'")
+    plt.savefig('figures/composer_matrix.png', dpi=150, bbox_inches='tight')
+    print("\nMatrix visualization saved as 'figures/composer_matrix.png'")
     plt.close()
 
 
