@@ -214,7 +214,7 @@ def comprehensive_summary():
     print("FINAL COMPREHENSIVE SUMMARY")
     print("=" * 80)
     
-    print("\n✅ ALL ANALYSES COMPLETE AND VERIFIED:")
+    print("\nALL ANALYSES COMPLETE AND VERIFIED:")
     print("\n1. ✓ Threshold Optimization:")
     print("   - Binary classification: 94%+ accuracy for major pairs")
     print("   - Files: threshold_*.png, composer_matrix.png")
@@ -252,7 +252,7 @@ def comprehensive_summary():
     print("  • Multi-output regression: 67.5% accuracy")
     print("  • Features show distinct patterns")
     print("  • All mathematical concepts (Units 4-6) properly demonstrated")
-    print("\n✅ RESULTS ARE VALID AND COMPREHENSIVE")
+    print("\nRESULTS ARE VALID AND COMPREHENSIVE")
 
 
 if __name__ == "__main__":
